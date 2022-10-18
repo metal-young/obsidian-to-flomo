@@ -1,4 +1,4 @@
-# Obsidian Plugin - 
+# Obsidian to Flomo
 
 Quickly share content to Flomo.
 
@@ -12,7 +12,7 @@ Flomo API is a paid membership feature, you need to be a paid member of Flomo fi
 
 If you are not yet a paid member, you can register as a member through this invitation link, so that we will all benefit.
 
-(https://v.flomoapp.com/register/?NzI5MzY2)[https://v.flomoapp.com/register/?NzI5MzY2]
+[https://v.flomoapp.com/register/?NzI5MzY2](https://v.flomoapp.com/register/?NzI5MzY2)
 
 If you have already registered directly, you can also enter this exclusive invitation code (only within 3 days after registration) to get the number of free PRO membership days.
 
@@ -52,7 +52,7 @@ Then you can also call up the command menu via `command` + `P`。
 You don't need to select the text, just call out the command menu and enter `Send current content to Flomo`;
 
 
-## donate
+## Donate
 
 ![](https://cdn.metalyoung.com/202210/236ce10f7a2083ad624448a43de79560.JPG)
 
