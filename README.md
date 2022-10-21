@@ -54,6 +54,4 @@ You don't need to select the text, just call out the command menu and enter `Sen
 
 ## Donate
 
-![](https://cdn.metalyoung.com/202210/236ce10f7a2083ad624448a43de79560.JPG)
-
-![](https://cdn.metalyoung.com/202210/80588be2aa1b72796ecbf3f5dd32cab7.JPG)
+<img src="https://cdn.metalyoung.com/202210/80588be2aa1b72796ecbf3f5dd32cab7.JPG" width="350px">
