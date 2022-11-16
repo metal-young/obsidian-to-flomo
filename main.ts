@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Editor, MarkdownView, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
 
 interface Settings {
 	flomoAPI: string;
@@ -21,8 +21,7 @@ export default class ObsidianToFlomo extends Plugin {
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				this.checkResult = this.checkSettings();
 				if (this.checkResult) {
-					new sendFlomeAPI(this.app, this).sendRequest(editor.getSelection());
-					new Notice('The current content has been sent to Flomo');
+					new sendFlomeAPI(this.app, this).sendRequest(editor.getSelection(),'The current content has been sent to Flomo');
 				}
 			}
 		});
@@ -33,8 +32,7 @@ export default class ObsidianToFlomo extends Plugin {
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				this.checkResult = this.checkSettings();
 				if (this.checkResult) {
-					new sendFlomeAPI(this.app, this).sendRequest(editor.getSelection());
-					new Notice('The selection has been sent to Flomo');
+					new sendFlomeAPI(this.app, this).sendRequest(editor.getSelection(),'The selection has been sent to Flomo');
 				}
 			}
 		});
@@ -70,13 +68,36 @@ class sendFlomeAPI {
 		this.plugin = plugin;
 	}
 
-	async sendRequest(text: string){
+	async sendRequest(text: string, successMsg: string) {
 		const xhr = new XMLHttpRequest();
 		xhr.open("POST",this.plugin.settings.flomoAPI);
 		xhr.setRequestHeader("Content-Type", "application/json");
 		xhr.send(JSON.stringify({
 			"content": text
 		}));
+		xhr.onreadystatechange = function () {
+			if (xhr.readyState == 4 && xhr.status == 200) {
+				console.log(xhr.responseText);
+				//能不能转化成json格式
+				try {
+					const json = JSON.parse(xhr.responseText);
+					console.log(json);
+					//json里的code如果是0就返回true，如果不是0就提示失败，如果是-1就返回json里的message
+					if (json.code == 0) {
+						new Notice(successMsg);
+					}
+					else if (json.code == -1) {
+						new Notice(json.message + 'please check your settings');
+					}
+					else {
+						new Notice('please check your settings');
+					}
+				}
+				catch (e) {
+					new Notice('please check your settings');
+				}
+			}
+		}
 	}
 }
 
@@ -105,5 +126,10 @@ class SampleSettingTab extends PluginSettingTab {
 					this.plugin.settings.flomoAPI = value;
 					await this.plugin.saveSettings();
 				}));
+
+		containerEl.createEl('button', {text: 'Send a test request'}).addEventListener('click', () => {
+			new sendFlomeAPI(this.app, this.plugin).sendRequest('This is a test request', 'The test request has been sent to Flomo');
+		}
+		);
 	}
 }
