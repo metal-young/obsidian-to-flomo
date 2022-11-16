@@ -4,6 +4,9 @@ Quickly share content to Flomo.
 
 You can send Obsidian content to Flomo, including the content of the entire file and the currently selected content.
 
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/metal-young/obsidian-to-flomo?style=for-the-badge&sort=semver)](https://github.com/metal-young/obsidian-to-flomo/releases/latest)
+![GitHub All Releases](https://img.shields.io/github/downloads/metal-young/obsidian-to-flomo/total?style=for-the-badge)
+
 ## How to use 
 
 ### Become a paid member of Flomo
