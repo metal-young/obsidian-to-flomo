@@ -142,7 +142,7 @@ class SampleSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		containerEl.createEl('h2', {text: 'Settings'});
+		containerEl.createEl('h2', {text: 'Settings for Obsidian to Flomo'});
 
 		new Setting(containerEl)
 			.setName('Flomo API')
