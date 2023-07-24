@@ -92,7 +92,7 @@ class FlomoAPI {
 		};
 	}
 
-	extractImages(text) {
+	extractImages(text: string) {
 		const regex = /!\[\[(.*?)\]\]/g;
 		const matches = text.matchAll(regex);
 		const imageList = [];
@@ -103,11 +103,11 @@ class FlomoAPI {
 		return imageList;
 	}
 
-	removeImageNotations(text) {
+	removeImageNotations(text: string) {
 		return text.replace(/!\[\[(.*?)\]\]/g, '');
 	}
 
-	handleResponse(successMsg, xhr) {
+	handleResponse(successMsg: string, xhr: XMLHttpRequest) {
 		if (xhr.readyState == 4) {
 			if (xhr.status == 200) {
 				try {
