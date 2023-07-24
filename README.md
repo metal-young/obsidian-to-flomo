@@ -1,5 +1,5 @@
 # Obsidian to Flomo
-
+[中文说明](README_CN.md)
 Quickly share content to Flomo.
 
 You can send Obsidian content to Flomo, including the content of the entire file and the currently selected content.
@@ -54,6 +54,12 @@ Then you can also call up the command menu via `command` + `P`。
 
 You don't need to select the text, just call out the command menu and enter `Send current content to Flomo`;
 
+## catnote support
+The usage of catnote is the same as Flomo, you can also fill in the catnote API to use this plugin.
+Here is my catnote invitation code, you can use it to sign up for catnote, we will all get rewards.
+```
+iyTYqM
+```
 
 ## Donate
 
