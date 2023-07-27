@@ -1,11 +1,13 @@
 # Obsidian to Flomo
 [中文说明](README_CN.md)
+
 Quickly share content to Flomo.
 
 You can send Obsidian content to Flomo, including the content of the entire file and the currently selected content.
 
 [![GitHub release](https://img.shields.io/github/v/release/metal-young/obsidian-to-flomo?style=for-the-badge&sort=semver)](https://github.com/metal-young/obsidian-to-flomo/releases/latest)
 ![GitHub All Releases](https://img.shields.io/github/downloads/metal-young/obsidian-to-flomo/total?style=for-the-badge)
+![GitHub](https://img.shields.io/github/license/metal-young/obsidian-to-flomo?style=for-the-badge)
 
 ## How to use 
 
@@ -27,28 +29,28 @@ NzI5MzY2
 
 ### Copy Flomo API
 
-![](https://cdn.metalyoung.com/202210/4189df9a713c42f5f2e05e3864078375.png)
+![](https://cdn.metalyoung.com/202210/4189df9a713c42f5f2e05e3864078375.png?x-oss-process=image/auto-orient,1/resize,m_lfit,w_200/quality,q_90)
 
-![](https://cdn.metalyoung.com/202210/779e61675387c1e9b1025d15c1384ea2.png)
+![](https://cdn.metalyoung.com/202210/779e61675387c1e9b1025d15c1384ea2.png?x-oss-process=image/auto-orient,1/resize,m_lfit,w_400/quality,q_90)
 
 ### Set Flomo API
 
-![](https://cdn.metalyoung.com/202210/b571bbdcd680fe84a1b35890ebf53b94.png)
+![](https://cdn.metalyoung.com/202210/b571bbdcd680fe84a1b35890ebf53b94.png?x-oss-process=image/auto-orient,1/resize,m_lfit,w_600/quality,q_90)
 
-![](https://cdn.metalyoung.com/202210/9b02789ba6ff50b113970fda0c1c9121.png)
+![](https://cdn.metalyoung.com/202210/9b02789ba6ff50b113970fda0c1c9121.png?x-oss-process=image/auto-orient,1/resize,m_lfit,w_600/quality,q_90)
 
 
 ### Send selected content
 
 First you need to select the text in the editor.
 
-![](https://cdn.metalyoung.com/202210/510e64df1409646a421f23b7597965c3.png)
+![](https://cdn.metalyoung.com/202210/510e64df1409646a421f23b7597965c3.png?x-oss-process=image/auto-orient,1/resize,m_lfit,w_600/quality,q_90)
 
 Then you can also call up the command menu via `command` + `P`。
 
-![](https://cdn.metalyoung.com/202210/32ab062ed85d121e45052058c79af1e1.png)
+![](https://cdn.metalyoung.com/202210/32ab062ed85d121e45052058c79af1e1.png?x-oss-process=image/auto-orient,1/resize,m_lfit,w_600/quality,q_90)
 
-![](https://cdn.metalyoung.com/202210/e9da4e4bfe8406a1c6fa0e02374a3586.png)
+![](https://cdn.metalyoung.com/202210/e9da4e4bfe8406a1c6fa0e02374a3586.png?x-oss-process=image/auto-orient,1/resize,m_lfit,w_600/quality,q_90)
 
 ### Send the entire contents of the file
 
