@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Editor, MarkdownView, Menu, Item, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
 
 interface Settings {
 	flomoAPI: string;
@@ -44,7 +44,32 @@ export default class ObsidianToFlomo extends Plugin {
 			}
 		});
 
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+		this.registerEvent(
+			this.app.workspace.on('editor-menu', (menu: Menu, editor: Editor) => {
+				if (!editor) {
+					return;
+				}
+				if (editor.getSelection().length === 0) {
+					return;
+				}
+
+				const selectedText = editor.getSelection();
+				let trimText = selectedText;
+
+				if (selectedText.length > 8) {
+					trimText = selectedText.substring(0, 3) + "..." + selectedText.substring(selectedText.length - 3, selectedText.length);
+				} else {
+					trimText = selectedText;
+				}
+
+				menu.addItem((item) => {
+					item.setTitle('Send "' + trimText + '"' + " to Flomo")
+					.onClick(() => new FlomoAPI(this.app, this).sendRequest(selectedText,'The selection has been sent to Flomo'))
+				})
+			}));
+
+
+		this.addSettingTab(new FlomoSettingTab(this.app, this));
 	}
 
 	async loadSettings() {
@@ -129,7 +154,7 @@ class FlomoAPI {
 	}
 }
 
-class SampleSettingTab extends PluginSettingTab {
+class FlomoSettingTab extends PluginSettingTab {
 	plugin: ObsidianToFlomo;
 
 	constructor(app: App, plugin: ObsidianToFlomo) {
