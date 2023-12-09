@@ -1,12 +1,15 @@
-import { App, Editor, MarkdownView, Menu, Item, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Editor, MarkdownView, Menu, MenuItem, Notice, Modal, TextComponent, ButtonComponent, Plugin, PluginSettingTab, Setting } from 'obsidian';
 
 interface Settings {
 	flomoAPI: string;
+	defaultTag: string;
 }
 
 const DEFAULT_SETTINGS: Settings = {
-	flomoAPI: ''
+	flomoAPI: '',
+	defaultTag: '',
 }
+
 
 export default class ObsidianToFlomo extends Plugin {
 	settings: Settings;
@@ -21,7 +24,7 @@ export default class ObsidianToFlomo extends Plugin {
 				if (view instanceof MarkdownView && this.checkSettings()) {
 					const content = view.getViewData();
 					if (content) {
-						new FlomoAPI(this.app, this).sendRequest(content,'The current content has been sent to Flomo');
+						new FlomoAPI(this.app, this).sendRequest(content, 'The current content has been sent to Flomo');
 					} else {
 						new Notice('No file is currently open. Please open a file and try again.');
 					}
@@ -36,10 +39,48 @@ export default class ObsidianToFlomo extends Plugin {
 				if (view instanceof MarkdownView && this.checkSettings()) {
 					const selectedText = editor.getSelection();
 					if (selectedText) {
-						new FlomoAPI(this.app, this).sendRequest(selectedText,'The selection has been sent to Flomo');
+						new FlomoAPI(this.app, this).sendRequest(selectedText, 'The selection has been sent to Flomo');
 					} else {
 						new Notice('No text selected. Please select some text and try again.');
 					}
+				}
+			}
+		});
+
+		this.addCommand({
+			id: 'send-to-flome-selected-each-line',
+			name: 'Send selected each line individually to Flomo',
+			editorCallback: (editor: Editor, view: MarkdownView) => {
+				if (view instanceof MarkdownView && this.checkSettings()) {
+					const selectedText = editor.getSelection();
+					if (!selectedText) {
+						new Notice('No text selected. Please select some text and try again.');
+						return;
+					}
+
+					const _this = this;
+					const modal = new TagModal(this.app);
+					modal.open();
+					modal.onClose = function() {
+						const trimmedText = selectedText.trim();
+						const lines = trimmedText.split('\n');
+
+						for (const line of lines) {
+							var content = line.trim();
+							if (content.length == 0) continue;
+
+							if (modal.tags) {
+								content += "\n";
+								for (const tag of modal.tags) {
+									content += "#" + tag + " ";
+								}
+							}
+
+							new FlomoAPI(_this.app, _this).sendRequest(content);
+						}
+
+						new Notice('The selected lines has been individually sent to Flomo');
+					};
 				}
 			}
 		});
@@ -62,7 +103,7 @@ export default class ObsidianToFlomo extends Plugin {
 					trimText = selectedText;
 				}
 
-				menu.addItem((item) => {
+				menu.addItem((item: MenuItem) => {
 					item.setTitle('Send "' + trimText + '"' + " to Flomo")
 					.onClick(() => new FlomoAPI(this.app, this).sendRequest(selectedText,'The selection has been sent to Flomo'))
 				})
@@ -89,6 +130,56 @@ export default class ObsidianToFlomo extends Plugin {
 	}
 }
 
+class TagModal extends Modal {
+
+	tags: string[] | undefined;
+
+	constructor(app: App) {
+		super(app);
+
+		this.modalEl.style.width = "20em";
+	}
+
+	onOpen() {
+		let _this = this;
+		const { titleEl, modalEl, contentEl } = this;
+
+		titleEl.innerText = "Flomo Tag";
+
+		const basename = app.workspace.getActiveViewOfType(MarkdownView)?.file.basename;
+		let inputTextComponent = new TextComponent(contentEl).setPlaceholder(basename || "");
+
+		const buttonEl = modalEl.createDiv();
+		buttonEl.addClass("modal-button-container");
+		let saveButton = new ButtonComponent(buttonEl)
+		.setButtonText("Save")
+		.onClick(() => {
+			this.tags = inputTextComponent.getValue().trim().split(",");
+			this.close();
+		}).buttonEl.addClass("mod-cta");
+		let cancelButton = new ButtonComponent(buttonEl)
+		.setButtonText("Cancel")
+		.onClick(() => {
+			this.close();
+		});
+		inputTextComponent.inputEl.size = 40;
+		inputTextComponent.inputEl.focus();
+		inputTextComponent.inputEl.setSelectionRange(inputTextComponent.getValue().length, inputTextComponent.getValue().length);
+		inputTextComponent.inputEl.addEventListener('keypress', function (keypressed) {
+			if (keypressed.key === 'Enter') {
+				_this.tags = inputTextComponent.getValue().trim().split(",");
+				_this.close();
+			}
+		});
+	}
+
+	onClose() {
+		const {contentEl} = this;
+		contentEl.empty();
+	}
+}
+
+
 class FlomoAPI {
 	plugin: ObsidianToFlomo;
 
@@ -96,19 +187,19 @@ class FlomoAPI {
 		this.plugin = plugin;
 	}
 
-	async sendRequest(text: string, successMsg: string) {
+	async sendRequest(text: string, successMsg?: string) {
 		const imageList = this.extractImages(text);
 		text = this.removeImageNotations(text);
 
 		const xhr = new XMLHttpRequest();
-		xhr.open("POST",this.plugin.settings.flomoAPI);
+		xhr.open("POST", this.plugin.settings.flomoAPI);
 		xhr.setRequestHeader("Content-Type", "application/json");
 		xhr.timeout = 5000; // Set timeout to 5 seconds
 		xhr.send(JSON.stringify({
 			"content": text,
 			'image_urls': imageList,
 		}));
-		xhr.onreadystatechange = this.handleResponse.bind(this, successMsg, xhr);
+		xhr.onreadystatechange = this.handleResponse.bind(this, xhr, successMsg);
 		xhr.onerror = () => {
 			new Notice('Network error, please check your connection');
 		};
@@ -132,19 +223,17 @@ class FlomoAPI {
 		return text.replace(/!\[\[(.*?)\]\]/g, '');
 	}
 
-	handleResponse(successMsg: string, xhr: XMLHttpRequest) {
+	handleResponse(xhr: XMLHttpRequest, successMsg?: string)  {
 		if (xhr.readyState == 4) {
 			if (xhr.status == 200) {
 				try {
 					const json = JSON.parse(xhr.responseText);
 					if (json.code == 0) {
-						new Notice(successMsg);
-					}
-					else {
+						if (successMsg) new Notice(successMsg);
+					} else {
 						new Notice(json.message + 'please check your settings');
 					}
-				}
-				catch (e) {
+				} catch (e) {
 					new Notice('please check your settings');
 				}
 			} else {
