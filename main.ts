@@ -85,6 +85,46 @@ export default class ObsidianToFlomo extends Plugin {
 			}
 		});
 
+		this.addCommand({
+			id: 'send-to-flome-selected-each-paragraph',
+			name: 'Send selected each paragraph individually to Flomo',
+			editorCallback: (editor: Editor, view: MarkdownView) => {
+				if (view instanceof MarkdownView && this.checkSettings()) {
+					const selectedText = editor.getSelection();
+					if (!selectedText) {
+						new Notice('No text selected. Please select some text and try again.');
+						return;
+					}
+
+					const _this = this;
+					const modal = new TagModal(this.app);
+					modal.open();
+					modal.onClose = function() {
+						const trimmedText = selectedText.trim();
+						const paragraphs = trimmedText.split(/\n{2,}/);
+
+						for (const paragraph of paragraphs) {
+							var content = paragraph.trim();
+							if (content.length == 0) continue;
+
+							if (modal.tags) {
+								content += "\n";
+								for (const tag of modal.tags) {
+									if (tag && tag.length > 0) {
+										content += "#" + tag + " ";
+									}
+								}
+							}
+
+							new FlomoAPI(_this.app, _this).sendRequest(content);
+						}
+
+						new Notice('The selected lines has been individually sent to Flomo');
+					};
+				}
+			}
+		});
+
 		this.registerEvent(
 			this.app.workspace.on('editor-menu', (menu: Menu, editor: Editor) => {
 				if (!editor) {
