@@ -11,7 +11,7 @@ You can send Obsidian content to Flomo, including the content of the entire file
 
 ## change log
 
-### 0.1.5
+### 0.1.8
 
 Contributed by [@jiyee](https://github.com/jiyee)
 
