@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Menu, MenuItem, Notice, Modal, TextComponent, ButtonComponent, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Editor, MarkdownView, Menu, MenuItem, Notice, Modal, Plugin, PluginSettingTab, Setting } from 'obsidian';
 
 interface Settings {
 	flomoAPI: string;
@@ -18,7 +18,7 @@ export default class ObsidianToFlomo extends Plugin {
 		await this.loadSettings();
 
 		this.addCommand({
-			id: 'send-to-flome-all',
+			id: 'send-to-flomo-all',
 			name: 'Send current content to Flomo',
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				if (view instanceof MarkdownView && this.checkSettings()) {
@@ -33,7 +33,7 @@ export default class ObsidianToFlomo extends Plugin {
 		});
 
 		this.addCommand({
-			id: 'send-to-flome-selected',
+			id: 'send-to-flomo-selected',
 			name: 'Send selected content to Flomo',
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				if (view instanceof MarkdownView && this.checkSettings()) {
@@ -48,7 +48,7 @@ export default class ObsidianToFlomo extends Plugin {
 		});
 
 		this.addCommand({
-			id: 'send-to-flome-selected-each-line',
+			id: 'send-to-flomo-selected-each-line',
 			name: 'Send selected each line individually to Flomo',
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				if (view instanceof MarkdownView && this.checkSettings()) {
@@ -58,35 +58,32 @@ export default class ObsidianToFlomo extends Plugin {
 						return;
 					}
 
-					const _this = this;
-					const modal = new TagModal(this.app);
-					modal.open();
-					modal.onClose = function() {
+					new TagModal(this.app, (tags: string[]) => {
 						const trimmedText = selectedText.trim();
 						const lines = trimmedText.split('\n');
 
 						for (const line of lines) {
-							var content = line.trim();
+							let content = line.trim();
 							if (content.length == 0) continue;
 
-							if (modal.tags) {
+							if (tags) {
 								content += "\n";
-								for (const tag of modal.tags) {
-									content += "#" + tag + " ";
+								for (const tag of tags) {
+									if (tag && tag.length > 0) {
+										content += "#" + tag + " ";
+									}
 								}
 							}
 
-							new FlomoAPI(_this.app, _this).sendRequest(content);
+							new FlomoAPI(this.app, this).sendRequest(content,"The selected lines has been individually sent to Flomo");
 						}
-
-						new Notice('The selected lines has been individually sent to Flomo');
-					};
+					}).open();
 				}
 			}
 		});
 
 		this.addCommand({
-			id: 'send-to-flome-selected-each-paragraph',
+			id: 'send-to-flomo-selected-each-paragraph',
 			name: 'Send selected each paragraph individually to Flomo',
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				if (view instanceof MarkdownView && this.checkSettings()) {
@@ -96,31 +93,28 @@ export default class ObsidianToFlomo extends Plugin {
 						return;
 					}
 
-					const _this = this;
-					const modal = new TagModal(this.app);
-					modal.open();
-					modal.onClose = function() {
+					// const _this = this;
+					new TagModal(this.app, (tags: string[]) => {
 						const trimmedText = selectedText.trim();
 						const paragraphs = trimmedText.split(/\n{2,}/);
 
 						for (const paragraph of paragraphs) {
-							var content = paragraph.trim();
+							let content = paragraph.trim();
 							if (content.length == 0) continue;
 
-							if (modal.tags) {
+							if (tags) {
 								content += "\n";
-								for (const tag of modal.tags) {
+								for (const tag of tags) {
 									if (tag && tag.length > 0) {
 										content += "#" + tag + " ";
 									}
 								}
 							}
 
-							new FlomoAPI(_this.app, _this).sendRequest(content);
+							new FlomoAPI(this.app, this).sendRequest(content,"The selected lines has been individually sent to Flomo");
+						
 						}
-
-						new Notice('The selected lines has been individually sent to Flomo');
-					};
+					}).open();
 				}
 			}
 		});
@@ -173,44 +167,46 @@ export default class ObsidianToFlomo extends Plugin {
 class TagModal extends Modal {
 
 	tags: string[] | undefined;
+	inputTags: string;
 
-	constructor(app: App) {
+	onSubmit: (tags: string[]) => void;
+
+	constructor(app: App, onSubmit: (tags: string[]) => void) {
 		super(app);
-
-		this.modalEl.style.width = "20em";
+		this.onSubmit = onSubmit;
 	}
 
 	onOpen() {
-		let _this = this;
-		const { titleEl, modalEl, contentEl } = this;
+		const {  contentEl } = this;
 
-		titleEl.innerText = "Flomo Tag";
+		contentEl.createEl("h1", { text: "Submit Flomo Tags" });
 
-		const basename = app.workspace.getActiveViewOfType(MarkdownView)?.file.basename;
-		let inputTextComponent = new TextComponent(contentEl).setPlaceholder(basename || "");
+		new Setting(contentEl)
+		.setName("Tags")
+		.setDesc("Separate tags with commas. e.g. tag1,tag2")
+		.addText(text => {
+			text.onChange((value) => {
+				this.inputTags = value;
+			});
 
-		const buttonEl = modalEl.createDiv();
-		buttonEl.addClass("modal-button-container");
-		let saveButton = new ButtonComponent(buttonEl)
-		.setButtonText("Save")
-		.onClick(() => {
-			this.tags = inputTextComponent.getValue().trim().split(",");
-			this.close();
-		}).buttonEl.addClass("mod-cta");
-		let cancelButton = new ButtonComponent(buttonEl)
-		.setButtonText("Cancel")
-		.onClick(() => {
-			this.close();
+			text.inputEl.addEventListener('keypress', (event) => {
+				if (event.key === 'Enter') {
+					this.tags = this.inputTags.trim().split(",");
+					this.onSubmit(this.tags);
+					this.close(); 
+				}
+			});
 		});
-		inputTextComponent.inputEl.size = 40;
-		inputTextComponent.inputEl.focus();
-		inputTextComponent.inputEl.setSelectionRange(inputTextComponent.getValue().length, inputTextComponent.getValue().length);
-		inputTextComponent.inputEl.addEventListener('keypress', function (keypressed) {
-			if (keypressed.key === 'Enter') {
-				_this.tags = inputTextComponent.getValue().trim().split(",");
-				_this.close();
-			}
-		});
+	
+
+		new Setting(contentEl)
+		.addButton((btn) =>btn
+			.setButtonText("Submit")
+			.setCta()
+			.onClick(() => {this.close();
+				this.tags = this.inputTags.trim().split(",");
+				this.onSubmit(this.tags);
+			}));
 	}
 
 	onClose() {

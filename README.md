@@ -9,6 +9,18 @@ You can send Obsidian content to Flomo, including the content of the entire file
 ![GitHub All Releases](https://img.shields.io/github/downloads/metal-young/obsidian-to-flomo/total?style=for-the-badge)
 ![GitHub](https://img.shields.io/github/license/metal-young/obsidian-to-flomo?style=for-the-badge)
 
+## change log
+
+### 0.1.5
+
+Contributed by [@jiyee](https://github.com/jiyee)
+
+Add: 
+ - Editor Menu : editor-menu to quick share
+ - Command : Send selected each line individually to Flomo
+ - Command : Send selected each paragraph individually to Flomo 
+
+
 ## How to use 
 
 ### Become a paid member of Flomo
