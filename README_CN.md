@@ -1,4 +1,4 @@
-# Obsidian 到 Flomo
+# Share to Flomo
 [英文说明](README.md)
 
 快速分享内容到 Flomo。

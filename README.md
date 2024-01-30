@@ -1,4 +1,4 @@
-# Obsidian to Flomo
+# Share to Flomo
 [中文说明](README_CN.md)
 
 Quickly share content to Flomo.
@@ -10,6 +10,11 @@ You can send Obsidian content to Flomo, including the content of the entire file
 ![GitHub](https://img.shields.io/github/license/metal-young/obsidian-to-flomo?style=for-the-badge)
 
 ## change log
+
+### 0.1.9
+
+Change:
+    - Change name to Share to Flomo
 
 ### 0.1.8
 
